@@ -1,0 +1,55 @@
+package com.codecademy.ccapplication;
+import java.util.List;
+import java.lang.Iterable;
+import java.util.Date;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@RestController
+@RequestMapping("/findes")
+public class findController {
+
+  private final findRepository findRepository;
+  private final findReportRepository findReportRepository;
+
+  public findController(findRepository findRepository, findReportRepository findReportRepository) {
+    this.findRepository = findRepository;
+    this.findReportRepository = findReportRepository;
+  }
+
+  @GetMapping()
+	public Iterable<find> getfinds() {
+    Iterable<find> findes = findRepository.findAll();
+    return findes;
+	}
+
+  @PostMapping(path="/addNew")
+  public String createNewfind(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String findPower) {
+    find newfind = new find(firstName, lastName, findPower);
+    findRepository.save(newfind);
+    return "New find ss successfully added!";
+  }
+
+  @PostMapping(path="/help")
+  public String postHelp(@RequestParam String postalCode, @RequestParam String streetAddress) {
+    findReport newfindReport = new findReport(postalCode, streetAddress, "");
+    findReportRepository.save(newfindReport);
+    return "Thanks! find sses have been dispatched to your location!";
+  }
+
+  @GetMapping(path="/ssReport")
+  public Iterable<findReport> getssReport() {
+    Iterable<findReport> findReport = findReportRepository.findAll();
+    return findReport;
+  }
+
+  @PostMapping(path="/{postalCode}")
+  public Iterable<findReport> getssReportByPostal(@PathVariable String postalCode) {
+    Iterable<findReport> findReport = findReportRepository.findByPostalCode(postalCode);
+    return findReport;
+  }
+}
